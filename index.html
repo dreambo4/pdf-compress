@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF 壓縮工具 — 純前端,檔案不上傳</title>
+    <title>PDF 工具箱 — 純前端,檔案不上傳</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>PDF 壓縮工具</h1>
+            <h1>PDF 工具箱</h1>
             <p class="subtitle">
                 <span class="badge">100% 純前端</span>
                 所有處理在你的瀏覽器執行,檔案絕不會上傳到任何伺服器
@@ -17,140 +17,213 @@
         </header>
 
         <main>
-            <section class="upload-area" id="uploadArea">
-                <input type="file" id="fileInput" accept="application/pdf" hidden>
-                <div class="upload-content">
-                    <svg class="upload-icon" viewBox="0 0 24 24" width="48" height="48">
-                        <path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                    </svg>
-                    <p class="upload-text">點擊或拖曳 PDF 檔案到此處</p>
-                    <p class="upload-hint">支援單一 PDF 檔案</p>
-                </div>
-            </section>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="compress">PDF 壓縮</button>
+                <button class="tab-btn" data-tab="img2pdf">圖片轉 PDF</button>
+            </div>
 
-            <section class="file-info" id="fileInfo" hidden>
-                <div class="info-row">
-                    <span class="info-label">檔案名稱</span>
-                    <span class="info-value" id="fileName">-</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">原始大小</span>
-                    <span class="info-value highlight" id="originalSize">-</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">頁數</span>
-                    <span class="info-value" id="pageCount">-</span>
-                </div>
-            </section>
+            <!-- Tab: PDF 壓縮 -->
+            <div class="tab-panel" id="tab-compress">
+                <section class="upload-area" id="uploadArea">
+                    <input type="file" id="fileInput" accept="application/pdf" hidden>
+                    <div class="upload-content">
+                        <svg class="upload-icon" viewBox="0 0 24 24" width="48" height="48">
+                            <path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        <p class="upload-text">點擊或拖曳 PDF 檔案到此處</p>
+                        <p class="upload-hint">支援單一 PDF 檔案</p>
+                    </div>
+                </section>
 
-            <section class="settings" id="settings" hidden>
-                <h2>壓縮設定</h2>
+                <section class="file-info" id="fileInfo" hidden>
+                    <div class="info-row">
+                        <span class="info-label">檔案名稱</span>
+                        <span class="info-value" id="fileName">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">原始大小</span>
+                        <span class="info-value highlight" id="originalSize">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">頁數</span>
+                        <span class="info-value" id="pageCount">-</span>
+                    </div>
+                </section>
 
-                <div class="setting-group">
-                    <label class="setting-label">壓縮模式</label>
-                    <div class="radio-group">
-                        <label class="radio-item">
-                            <input type="radio" name="mode" value="quality" checked>
-                            <span>依品質壓縮</span>
+                <section class="settings" id="settings" hidden>
+                    <h2>壓縮設定</h2>
+
+                    <div class="setting-group">
+                        <label class="setting-label">壓縮模式</label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" name="mode" value="quality" checked>
+                                <span>依品質壓縮</span>
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="mode" value="target">
+                                <span>指定目標大小</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-group" id="qualityGroup">
+                        <label class="setting-label" for="qualitySlider">
+                            圖片品質: <span id="qualityValue">75</span>%
                         </label>
-                        <label class="radio-item">
-                            <input type="radio" name="mode" value="target">
-                            <span>指定目標大小</span>
+                        <input type="range" id="qualitySlider" min="10" max="95" value="75" step="5">
+                        <div class="slider-labels">
+                            <span>檔案小</span>
+                            <span>品質高</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-group" id="targetGroup" hidden>
+                        <label class="setting-label">目標檔案大小</label>
+                        <div class="target-input">
+                            <input type="number" id="targetSize" min="1" value="500" step="1">
+                            <select id="targetUnit">
+                                <option value="KB">KB</option>
+                                <option value="MB" selected>MB</option>
+                            </select>
+                        </div>
+                        <p class="hint">系統會自動調整品質以接近目標大小(無法保證完全精確)</p>
+                    </div>
+
+                    <div class="setting-group" id="scaleGroup">
+                        <label class="setting-label" for="scaleSlider">
+                            清晰度: <span id="scaleValue">1.5</span>x
+                            <span class="scale-hint" id="scaleHint">(一般使用,看得清楚)</span>
                         </label>
+                        <input type="range" id="scaleSlider" min="0.5" max="3" value="1.5" step="0.1">
+                        <div class="slider-labels">
+                            <span>1x(模糊,檔案小)</span>
+                            <span>2x(列印用)</span>
+                            <span>3x(超清晰,檔案大)</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-group" id="autoScaleInfo" hidden>
+                        <div class="info-box">
+                            <strong>自動最佳化模式</strong>
+                            <p>系統會在不超過目標大小的前提下,自動使用最高清晰度。</p>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="compressBtn">開始壓縮</button>
+                </section>
+
+                <section class="progress" id="progress" hidden>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">準備中...</p>
+                </section>
+
+                <section class="result" id="result" hidden>
+                    <h2>壓縮結果</h2>
+                    <div class="result-stats">
+                        <div class="stat-card">
+                            <span class="stat-label">原始大小</span>
+                            <span class="stat-value" id="resultOriginal">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">壓縮後大小</span>
+                            <span class="stat-value highlight" id="resultCompressed">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">節省空間</span>
+                            <span class="stat-value success" id="resultSaved">-</span>
+                        </div>
+                    </div>
+                    <div class="result-detail" id="resultDetail" hidden>
+                        <span class="detail-label">實際使用設定:</span>
+                        <span class="detail-value" id="resultSettings">-</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-primary" id="downloadBtn">下載壓縮檔</button>
+                        <button class="btn btn-secondary" id="resetBtn">重新開始</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Tab: 圖片轉 PDF -->
+            <div class="tab-panel" id="tab-img2pdf" hidden>
+                <section class="upload-area" id="imgUploadArea">
+                    <input type="file" id="imgFileInput" accept="image/jpeg,image/png" multiple hidden>
+                    <div class="upload-content">
+                        <svg class="upload-icon" viewBox="0 0 24 24" width="48" height="48">
+                            <path fill="currentColor" d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z"/>
+                        </svg>
+                        <p class="upload-text">點擊或拖曳圖片到此處</p>
+                        <p class="upload-hint">支援 JPG、PNG,可一次選擇多張,依檔名排序</p>
+                    </div>
+                </section>
+
+                <div class="img-toolbar" id="imgToolbar" hidden>
+                    <span class="img-count" id="imgCount">0 張圖片</span>
+                    <div class="img-toolbar-actions">
+                        <button class="btn btn-sm btn-secondary" id="imgAddMoreBtn">＋ 新增圖片</button>
+                        <button class="btn btn-sm btn-outline-danger" id="imgClearBtn">全部清除</button>
                     </div>
                 </div>
 
-                <div class="setting-group" id="qualityGroup">
-                    <label class="setting-label" for="qualitySlider">
-                        圖片品質: <span id="qualityValue">75</span>%
-                    </label>
-                    <input type="range" id="qualitySlider" min="10" max="95" value="75" step="5">
-                    <div class="slider-labels">
-                        <span>檔案小</span>
-                        <span>品質高</span>
-                    </div>
+                <div class="img-grid" id="imgGrid"></div>
+
+                <div class="img-actions" id="imgActions" hidden>
+                    <p class="hint">可拖曳縮圖調整頁面順序</p>
+                    <button class="btn btn-primary" id="imgGenerateBtn">生成 PDF</button>
                 </div>
 
-                <div class="setting-group" id="targetGroup" hidden>
-                    <label class="setting-label">目標檔案大小</label>
-                    <div class="target-input">
-                        <input type="number" id="targetSize" min="1" value="500" step="1">
-                        <select id="targetUnit">
-                            <option value="KB">KB</option>
-                            <option value="MB" selected>MB</option>
-                        </select>
+                <section class="progress" id="imgProgress" hidden>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="imgProgressFill"></div>
                     </div>
-                    <p class="hint">系統會自動調整品質以接近目標大小(無法保證完全精確)</p>
-                </div>
+                    <p class="progress-text" id="imgProgressText">準備中...</p>
+                </section>
 
-                <div class="setting-group" id="scaleGroup">
-                    <label class="setting-label" for="scaleSlider">
-                        清晰度: <span id="scaleValue">1.5</span>x
-                        <span class="scale-hint" id="scaleHint">(一般使用,看得清楚)</span>
-                    </label>
-                    <input type="range" id="scaleSlider" min="0.5" max="3" value="1.5" step="0.1">
-                    <div class="slider-labels">
-                        <span>1x(模糊,檔案小)</span>
-                        <span>2x(列印用)</span>
-                        <span>3x(超清晰,檔案大)</span>
+                <section class="result" id="imgResult" hidden>
+                    <h2>生成完成</h2>
+                    <div class="result-stats">
+                        <div class="stat-card">
+                            <span class="stat-label">頁數</span>
+                            <span class="stat-value" id="imgPageCount">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">PDF 大小</span>
+                            <span class="stat-value highlight" id="imgFileSize">-</span>
+                        </div>
                     </div>
-                </div>
-
-                <div class="setting-group" id="autoScaleInfo" hidden>
-                    <div class="info-box">
-                        <strong>自動最佳化模式</strong>
-                        <p>系統會在不超過目標大小的前提下,自動使用最高清晰度。</p>
+                    <div class="actions">
+                        <button class="btn btn-primary" id="imgDownloadBtn">下載 PDF</button>
+                        <button class="btn btn-secondary" id="imgResetBtn">重新開始</button>
                     </div>
-                </div>
-
-                <button class="btn btn-primary" id="compressBtn">開始壓縮</button>
-            </section>
-
-            <section class="progress" id="progress" hidden>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <p class="progress-text" id="progressText">準備中...</p>
-            </section>
-
-            <section class="result" id="result" hidden>
-                <h2>壓縮結果</h2>
-                <div class="result-stats">
-                    <div class="stat-card">
-                        <span class="stat-label">原始大小</span>
-                        <span class="stat-value" id="resultOriginal">-</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label">壓縮後大小</span>
-                        <span class="stat-value highlight" id="resultCompressed">-</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label">節省空間</span>
-                        <span class="stat-value success" id="resultSaved">-</span>
-                    </div>
-                </div>
-                <div class="result-detail" id="resultDetail" hidden>
-                    <span class="detail-label">實際使用設定:</span>
-                    <span class="detail-value" id="resultSettings">-</span>
-                </div>
-                <div class="actions">
-                    <button class="btn btn-primary" id="downloadBtn">下載壓縮檔</button>
-                    <button class="btn btn-secondary" id="resetBtn">重新開始</button>
-                </div>
-            </section>
+                </section>
+            </div>
         </main>
 
         <footer>
             <p>
                 <strong>隱私保證:</strong>本工具為純前端應用程式,
-                你的 PDF 檔案不會被上傳或儲存到任何伺服器,
-                所有壓縮運算皆在你的瀏覽器本地執行。
+                你的檔案不會被上傳或儲存到任何伺服器,
+                所有運算皆在你的瀏覽器本地執行。
             </p>
         </footer>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script src="app.js"></script>
+    <script src="compress.js"></script>
+    <script src="img-to-pdf.js"></script>
+    <script>
+        document.querySelectorAll('.tab-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach((p) => { p.hidden = true; });
+                btn.classList.add('active');
+                document.getElementById('tab-' + btn.dataset.tab).hidden = false;
+            });
+        });
+    </script>
 </body>
 </html>
