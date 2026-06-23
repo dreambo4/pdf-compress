@@ -354,7 +354,7 @@ input[type="range"]::-moz-range-thumb {
 
 .result-stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 12px;
     margin-bottom: 24px;
 }
@@ -426,6 +426,189 @@ footer {
 footer strong {
     color: #fff;
 }
+
+/* ── Tabs ─────────────────────────────────────────── */
+
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 28px;
+}
+
+.tab-btn {
+    padding: 12px 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #718096;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+}
+
+.tab-btn:hover:not(.active) {
+    color: #4a5568;
+}
+
+.tab-btn.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+}
+
+/* ── Image toolbar ────────────────────────────────── */
+
+.img-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 0 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.img-count {
+    font-weight: 600;
+    color: #4a5568;
+    font-size: 0.95rem;
+}
+
+.img-toolbar-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* ── Image grid ───────────────────────────────────── */
+
+.img-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.img-item {
+    position: relative;
+    background: #f7fafc;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #e2e8f0;
+    cursor: grab;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    user-select: none;
+}
+
+.img-item:hover {
+    border-color: #cbd5e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.img-item.dragging {
+    opacity: 0.4;
+    cursor: grabbing;
+}
+
+.img-item.drag-over {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+}
+
+.img-item img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    background: white;
+    display: block;
+}
+
+.img-order {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: #667eea;
+    color: white;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.img-remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(0, 0, 0, 0.45);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    transition: background 0.2s;
+}
+
+.img-remove:hover {
+    background: #e53e3e;
+}
+
+.img-name {
+    padding: 6px 8px;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #4a5568;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* ── Image actions ────────────────────────────────── */
+
+.img-actions {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.img-actions .hint {
+    margin: 0;
+    text-align: center;
+}
+
+/* ── Button variants ──────────────────────────────── */
+
+.btn-sm {
+    padding: 8px 14px;
+    font-size: 0.875rem;
+    width: auto;
+}
+
+.btn-outline-danger {
+    background: transparent;
+    color: #e53e3e;
+    border: 2px solid #e53e3e;
+}
+
+.btn-outline-danger:hover {
+    background: #fff5f5;
+}
+
+/* ── Responsive ───────────────────────────────────── */
 
 @media (max-width: 600px) {
     header h1 {
