@@ -20,6 +20,7 @@
             <div class="tabs">
                 <button class="tab-btn active" data-tab="compress">PDF 壓縮</button>
                 <button class="tab-btn" data-tab="img2pdf">圖片轉 PDF</button>
+                <button class="tab-btn" data-tab="pdf2img">PDF 轉圖片</button>
             </div>
 
             <!-- Tab: PDF 壓縮 -->
@@ -200,6 +201,96 @@
                     </div>
                 </section>
             </div>
+
+            <!-- Tab: PDF 轉圖片 -->
+            <div class="tab-panel" id="tab-pdf2img" hidden>
+                <section class="upload-area" id="p2iUploadArea">
+                    <input type="file" id="p2iFileInput" accept="application/pdf" hidden>
+                    <div class="upload-content">
+                        <svg class="upload-icon" viewBox="0 0 24 24" width="48" height="48">
+                            <path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        <p class="upload-text">點擊或拖曳 PDF 檔案到此處</p>
+                        <p class="upload-hint">支援單一 PDF 檔案</p>
+                    </div>
+                </section>
+
+                <section class="file-info" id="p2iFileInfo" hidden>
+                    <div class="info-row">
+                        <span class="info-label">檔案名稱</span>
+                        <span class="info-value" id="p2iFileName">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">頁數</span>
+                        <span class="info-value" id="p2iPageCount">-</span>
+                    </div>
+                </section>
+
+                <section class="settings" id="p2iSettings" hidden>
+                    <h2>轉圖片設定</h2>
+
+                    <div class="setting-group">
+                        <label class="setting-label">輸出方式</label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" name="p2iMode" value="perPage" checked>
+                                <span>一頁一張圖</span>
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="p2iMode" value="longImage">
+                                <span>連成一張長圖</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label" for="p2iQualitySlider">
+                            圖片品質: <span id="p2iQualityValue">85</span>%
+                        </label>
+                        <input type="range" id="p2iQualitySlider" min="10" max="100" value="85" step="5">
+                        <div class="slider-labels">
+                            <span>檔案小</span>
+                            <span>品質高</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label" for="p2iScaleSlider">
+                            清晰度: <span id="p2iScaleValue">2.0</span>x
+                            <span class="scale-hint" id="p2iScaleHint">(列印 A4 品質)</span>
+                        </label>
+                        <input type="range" id="p2iScaleSlider" min="0.5" max="3" value="2.0" step="0.1">
+                        <div class="slider-labels">
+                            <span>1x(模糊,檔案小)</span>
+                            <span>2x(列印用)</span>
+                            <span>3x(超清晰,檔案大)</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="p2iConvertBtn">開始轉換</button>
+                </section>
+
+                <section class="progress" id="p2iProgress" hidden>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="p2iProgressFill"></div>
+                    </div>
+                    <p class="progress-text" id="p2iProgressText">準備中...</p>
+                </section>
+
+                <section class="result" id="p2iResult" hidden>
+                    <div class="result-header">
+                        <h2>轉換結果</h2>
+                        <span class="result-summary" id="p2iResultSummary">-</span>
+                    </div>
+
+                    <div class="actions image-actions">
+                        <button class="btn btn-primary" id="p2iDownloadAllBtn">全部打包下載 (ZIP)</button>
+                        <button class="btn btn-secondary" id="p2iResetBtn">重新開始</button>
+                    </div>
+
+                    <div class="p2i-grid" id="p2iGrid"></div>
+                </section>
+            </div>
         </main>
 
         <footer>
@@ -213,8 +304,10 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="compress.js"></script>
     <script src="img-to-pdf.js"></script>
+    <script src="pdf-to-img.js"></script>
     <script>
         document.querySelectorAll('.tab-btn').forEach((btn) => {
             btn.addEventListener('click', () => {

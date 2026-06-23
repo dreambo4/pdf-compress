@@ -608,6 +608,76 @@ footer strong {
     background: #fff5f5;
 }
 
+/* ── PDF 轉圖片 ───────────────────────────────────── */
+
+.result-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.result-header h2 {
+    margin-bottom: 0;
+}
+
+.result-summary {
+    font-size: 0.9rem;
+    color: #667eea;
+    font-weight: 600;
+}
+
+.image-actions {
+    margin-bottom: 24px;
+}
+
+.p2i-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+}
+
+.p2i-card {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.p2i-thumb {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.p2i-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.p2i-page {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.p2i-size {
+    color: #718096;
+}
+
+.p2i-card .btn-sm {
+    width: 100%;
+}
+
 /* ── Responsive ───────────────────────────────────── */
 
 @media (max-width: 600px) {
@@ -629,5 +699,25 @@ footer strong {
 
     .radio-item {
         min-width: 100%;
+    }
+
+    .tab-btn {
+        padding: 10px 8px;
+        font-size: 0.9rem;
+    }
+
+    .p2i-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .p2i-thumb {
+        height: 140px;
+    }
+}
+
+@media (max-width: 380px) {
+    .p2i-grid {
+        grid-template-columns: 1fr;
     }
 }
