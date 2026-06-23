@@ -128,6 +128,25 @@ async function p2iRenderPageToCanvas(pdf, pageNum, scale) {
     return canvas;
 }
 
+// 由原始 canvas 產生一張輕量縮圖(僅供預覽),長邊上限 THUMB_MAX_PX
+const P2I_THUMB_MAX_PX = 400;
+
+function p2iMakeThumbUrl(srcCanvas) {
+    const longSide = Math.max(srcCanvas.width, srcCanvas.height);
+    const ratio = Math.min(1, P2I_THUMB_MAX_PX / longSide);
+
+    const thumb = document.createElement('canvas');
+    thumb.width = Math.max(1, Math.round(srcCanvas.width * ratio));
+    thumb.height = Math.max(1, Math.round(srcCanvas.height * ratio));
+
+    const ctx = thumb.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, thumb.width, thumb.height);
+    ctx.drawImage(srcCanvas, 0, 0, thumb.width, thumb.height);
+
+    return thumb.toDataURL('image/jpeg', 0.6);
+}
+
 async function p2iStartConversion() {
     p2iEls.convertBtn.disabled = true;
     p2iEls.progress.hidden = false;
@@ -169,11 +188,13 @@ async function p2iConvertToPerPage(pdf, scale, quality, baseName) {
         p2iUpdateProgress(((i - 1) / total) * 100, `轉換第 ${i} / ${total} 頁...`);
         const canvas = await p2iRenderPageToCanvas(pdf, i, scale);
         const blob = await p2iCanvasToBlob(canvas, quality);
+        const thumbUrl = p2iMakeThumbUrl(canvas);
         const pageStr = String(i).padStart(pad, '0');
         p2iState.results.push({
             name: `${baseName}_${pageStr}.jpg`,
             blob,
             url: URL.createObjectURL(blob),
+            thumbUrl,
         });
     }
     p2iUpdateProgress(100, '完成!');
@@ -211,10 +232,12 @@ async function p2iConvertToLongImage(pdf, scale, quality, baseName) {
 
     p2iUpdateProgress(96, '輸出圖片中...');
     const blob = await p2iCanvasToBlob(longCanvas, quality);
+    const thumbUrl = p2iMakeThumbUrl(longCanvas);
     p2iState.results.push({
         name: `${baseName}_long.jpg`,
         blob,
         url: URL.createObjectURL(blob),
+        thumbUrl,
     });
     p2iUpdateProgress(100, '完成!');
 }
@@ -238,7 +261,7 @@ function p2iShowResult(mode) {
 
         const thumb = document.createElement('img');
         thumb.className = 'p2i-thumb';
-        thumb.src = item.url;
+        thumb.src = item.thumbUrl;
         thumb.alt = item.name;
         thumb.loading = 'lazy';
 
